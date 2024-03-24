@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.73,
+      "y": 6.67
+    },
+    "rotation": 59.04
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PLTopNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PLMIDTopNote"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "PLMIDTop2Note"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

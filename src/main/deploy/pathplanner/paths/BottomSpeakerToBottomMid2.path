@@ -1,0 +1,92 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 0.7913245719729881,
+        "y": 4.499045012324901
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.163773079622079,
+        "y": 1.25622685409072
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.386354278901786,
+        "y": 2.4997677080407827
+      },
+      "prevControl": {
+        "x": 5.899169538622997,
+        "y": 0.9245507058642113
+      },
+      "nextControl": {
+        "x": 8.678500058922884,
+        "y": 2.684793368720812
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.7913245719729881,
+        "y": 4.499045012324901
+      },
+      "prevControl": {
+        "x": 5.543562593649505,
+        "y": -0.584291560042194
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 26.003345844511458,
+      "rotateFast": true
+    }
+  ],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Harvest",
+      "waypointRelativePos": 0.65,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Harvest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 5.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -59.04000000000002,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": {
+    "rotation": -59.04000000000002,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}
