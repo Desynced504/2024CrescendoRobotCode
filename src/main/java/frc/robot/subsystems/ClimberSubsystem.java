@@ -47,7 +47,7 @@ public class ClimberSubsystem extends SubsystemBase {
 
   /** Creates a new ActuatorSubsystem. */
   public ClimberSubsystem() {
-    this.applyClimberConstants();
+    // this.applyClimberConstants();
   }
 
   @Override
@@ -71,10 +71,10 @@ public class ClimberSubsystem extends SubsystemBase {
 
   private void applyClimberConstants()
   {
-    climber.getConfigurator().apply(climberMotorOutputConfigs);
+    // climber.getConfigurator().apply(climberMotorOutputConfigs);
     // climber.getConfigurator().apply(climberLimits);
-    climber.getConfigurator().apply(climberSlot0Configs);
-    climber.getConfigurator().apply(climberMotionMagicConfigs);
+    // climber.getConfigurator().apply(climberSlot0Configs);
+    // climber.getConfigurator().apply(climberMotionMagicConfigs);
   }
 
   /**
