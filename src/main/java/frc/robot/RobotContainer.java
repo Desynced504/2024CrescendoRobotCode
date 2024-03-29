@@ -10,12 +10,14 @@ import frc.robot.commands.ActuatorCommands.ActuatorAngleTargetting;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ActuatorSubsystem;
 // import frc.robot.subsystems.CameraSubsystem;
+// import frc.robot.subsystems.CameraSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 // import frc.robot.subsystems.ActuatorSubsystem;
 import frc.robot.subsystems.HarvesterSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.PhotonVisionWrapper;
 
 import java.util.function.DoubleSupplier;
 
@@ -37,12 +39,14 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+  // private final PhotonVisionSubsystem m_PhotonVisionSubsystem = new PhotonVisionSubsystem();
+  // private final CameraSubsystem m_CameraSubsystem = new CameraSubsystem();
   private final SwerveSubsystem m_SwerveSubsystem = TunerConstants.SwerveDriveTrain;
+  private final PhotonVisionWrapper m_PhotonVisionWrapper = new PhotonVisionWrapper(m_SwerveSubsystem.getSwerveDriveOdometry()); //TODO: Test Requirements on Swerve Drive
   private final HarvesterSubsystem m_HarvesterSubsystem = new HarvesterSubsystem();
   private final IndexerSubsystem m_IndexerSubsystem = new IndexerSubsystem();
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ActuatorSubsystem m_ActuatorSubsystem = new ActuatorSubsystem();
-  // private final CameraSubsystem m_CameraSubsystem = new CameraSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
   private final MasterCommands MasterCommands = new MasterCommands(m_SwerveSubsystem, m_HarvesterSubsystem, m_IndexerSubsystem, m_ShooterSubsystem, m_ClimberSubsystem);
@@ -90,35 +94,35 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // Default Commands
-    m_SwerveSubsystem.setDefaultCommand
-    (
-      m_SwerveSubsystem.drive(
-          () -> -m_controller.getLeftY()
-          , () -> -m_controller.getLeftX()
-          , () -> -m_controller.getRightX()
-          )
-    );
-    m_ClimberSubsystem.setDefaultCommand(m_ClimberSubsystem.stopClimber());
+    // // Default Commands
+    // m_SwerveSubsystem.setDefaultCommand
+    // (
+    //   m_SwerveSubsystem.drive(
+    //       () -> -m_controller.getLeftY()
+    //       , () -> -m_controller.getLeftX()
+    //       , () -> -m_controller.getRightX()
+    //       )
+    // );
+    // m_ClimberSubsystem.setDefaultCommand(m_ClimberSubsystem.stopClimber());
 
-    // Event Trigger Commands
-    m_controller.x().onTrue(MasterCommands.Harvest());
-    m_controller.b().onTrue(MasterCommands.Shoot());
+    // // Event Trigger Commands
+    // m_controller.x().onTrue(MasterCommands.Harvest());
+    // m_controller.b().onTrue(MasterCommands.Shoot());
     
-    m_controller.a().whileTrue(MasterCommands.interruptAll());
-    m_controller.y().whileTrue(MasterCommands.ReverseHarvest());
+    // m_controller.a().whileTrue(MasterCommands.interruptAll());
+    // m_controller.y().whileTrue(MasterCommands.ReverseHarvest());
 
-    // TODO: Camera is 13 inches from center of robot
-    m_controller.button(7).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 35));
-    m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 53));
-    // m_controller.button(8).whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, 00));
-    m_controller.rightBumper().onTrue(m_SwerveSubsystem.CMDzeroGyro());
+    // // TODO: Camera is 13 inches from center of robot
+    // m_controller.button(7).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 35));
+    // m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 53));
+    // // m_controller.button(8).whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, 00));
+    // m_controller.rightBumper().onTrue(m_SwerveSubsystem.CMDzeroGyro());
  
-    // new JoystickButton(m_crescendoController, 7).whileTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> (((joystickSlider.getAsDouble()+1)*20) + 30)));
-    new JoystickButton(m_crescendoController, 1).onTrue(MasterCommands.trapShot());
+    // // new JoystickButton(m_crescendoController, 7).whileTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> (((joystickSlider.getAsDouble()+1)*20) + 30)));
+    // new JoystickButton(m_crescendoController, 1).onTrue(MasterCommands.trapShot());
 
-    new JoystickButton(m_crescendoController, 2).whileTrue(m_ClimberSubsystem.extend());
-    new JoystickButton(m_crescendoController, 3).whileTrue(m_ClimberSubsystem.retract());
+    // new JoystickButton(m_crescendoController, 2).whileTrue(m_ClimberSubsystem.extend());
+    // new JoystickButton(m_crescendoController, 3).whileTrue(m_ClimberSubsystem.retract());
 
     
     // TODO: Test Controller Color LAST THING

@@ -22,6 +22,7 @@ import com.pathplanner.lib.util.ReplanningConfig;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -154,6 +155,19 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         System.out.println("Fused Position with Drivetrain: " + this.m_odometry.getEstimatedPosition());
     }
 
+    public SwerveDrivePoseEstimator getSwerveDriveOdometry()
+    {
+        return this.m_odometry;
+    }
+
+
+    @Override
+    public void periodic()
+    {
+        // TODO: Check this functionaltiy, also add a delay
+        swerveFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
+    }
+
 
     // @Override
     // public void periodic() {
@@ -171,6 +185,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     //     // swerveFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
     //     try {
     //         EstimatedRobotPose estimatedPoseResult = CameraSubsystem.getEstimatedRobotPose(getPose());
+    //         // EstimatedRobotPose estimatedPoseResult = CameraSubsystem.getEstimatedRobotPose(getPose());
+            
+    //         // EstimatedRobotPose estimatedPoseResult = null;
+    //         // estimatedPoseResult = null;
     //         if (estimatedPoseResult != null)
     //         {
     //             Pose2d robotPose = estimatedPoseResult.estimatedPose.toPose2d();
@@ -203,15 +221,13 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     //                 cameraFieldPoseEstimate.setRobotPose(robotPose);
     //                 fusedFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
 
-    //             }
-                
+    //             }  
     //         }
     //     } catch (Exception e) {
     //         // TODO: handle exception
     //         System.out.println("No April Tag Detected? . . . " + e);
-    //         //e.printStackTrace();
+    //         e.printStackTrace();
     //     }
-
 
     //     CameraSubsystem.updateRobotPose(getPose());
 

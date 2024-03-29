@@ -133,10 +133,7 @@ public final class Constants {
 
       public static final double xRoll = Units.degreesToRadians(180);
       public static final double yPitchUp = Units.degreesToRadians(0);
-      public static final double zYaw = Units.degreesToRadians(8);
-
-
-      // 8 Degrees inwards
+      public static final double zYaw = Units.degreesToRadians(8); // 8 Degrees inwards
     }
   }
 }

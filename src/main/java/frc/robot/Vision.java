@@ -53,8 +53,15 @@
 //         harvesterPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
 //         shooterPhotonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
 
-//         setHarvesterPipelineIndex(1);
+//         setHarvesterPipelineIndex(0);
 //         setShooterPipelineIndex(0);
+//         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+//         System.out.println(harvesterCamera.getName() + " Index: " + harvesterCamera.getPipelineIndex());
+//         System.out.println(shooterCamera.getName() + " Index: " + shooterCamera.getPipelineIndex());
 //     }
 
 //     public Optional<EstimatedRobotPose> getEstimatedGlobalPoseFromHarvester(Pose2d prevEstimatedRobotPose) {
@@ -89,6 +96,40 @@
 
 
 //     }
+
+
+
+
+
+// 	// private boolean resultIsValid(PhotonPipelineResult result) {
+// 	// 	for (var target : result.targets) {
+// 	// 		if (target.getPoseAmbiguity() > 0.2) {
+// 	// 			return false;
+// 	// 		}
+// 	// 	}
+// 	// 	return true;
+// 	// }
+
+//     // PhotonPipelineResult latestShooterResult;
+//     // public void getPoseFromShooter()
+//     // {
+//     //     latestShooterResult = shooterCamera.getLatestResult();
+// 	// 	boolean latestResultIsValid = resultIsValid(latestShooterResult);
+// 	// 	double lastRawTimestampSeconds = latestShooterResult.getTimestampSeconds();
+// 	// 	if (!latestResultIsValid) {
+// 	// 		return;
+// 	// 	}
+// 	// 	latestPose = photonPoseEstimator.update(latestResult);
+// 	// 	if (latestPose.isPresent()) {
+// 	// 		lastValidTimestampSeconds = latestPose.get().timestampSeconds;
+// 	// 		lastFieldPose = latestPose.get().estimatedPose.toPose2d();
+// 	// 		rawVisionFieldObject.setPose(lastFieldPose);
+// 	// 		aprilTagsHelper.addVisionMeasurement(lastFieldPose, lastValidTimestampSeconds, STANDARD_DEVS);
+// 	// 		var estimatedPose = aprilTagsHelper.getEstimatedPosition();
+// 	// 		aprilTagsHelper.getField().setRobotPose(estimatedPose);
+// 	// 		photonPoseEstimator.setLastPose(estimatedPose);
+// 	// 	}
+//     // }
 
 
 //     /**
