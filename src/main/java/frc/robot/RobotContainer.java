@@ -110,7 +110,7 @@ public class RobotContainer {
 
     // TODO: Camera is 13 inches from center of robot
     m_controller.button(7).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 35));
-    m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 54));
+    m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 53));
     // m_controller.button(8).whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, 00));
     m_controller.rightBumper().onTrue(m_SwerveSubsystem.CMDzeroGyro());
  
@@ -139,8 +139,8 @@ public class RobotContainer {
     return new SequentialCommandGroup(
       MasterCommands.Shoot()
       // , new PathPlannerAuto("4NoteGrab5")
-      , new PathPlannerAuto("4 Note From Middle")
-      , MasterCommands.Shoot()
+      // , new PathPlannerAuto("4 Note From Middle")
+      // , MasterCommands.Shoot()
       );
     // return null;
       // return m_ActuatorSubsystem.factoryResetActuator();
