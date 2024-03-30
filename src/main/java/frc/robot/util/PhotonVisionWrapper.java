@@ -34,6 +34,7 @@ public class PhotonVisionWrapper
                 , HarvesterCamera.yPitchUp
                 , HarvesterCamera.zYaw)
             )
+        , 0
         );
 
 
@@ -47,6 +48,7 @@ public class PhotonVisionWrapper
                 , ShooterCamera.yPitchUp
                 , ShooterCamera.zYaw)
             )
+        , 0
         );
 
     private final SwerveDrivePoseEstimator m_swerveDrive;
@@ -67,13 +69,13 @@ public class PhotonVisionWrapper
 
         // TODO: AFTER TESTING CAMERAS INDIVIDUALLY, ENSURE THAT ADD_REQUIREMENTS DOES NOT OVERRIDE ACCESS TO SWERVE!!!
 
-        // networkTables.addListener(
-		// 		networkTables
-		// 				.getTable("photonvision")
-		// 				.getSubTable(shooterCamera.getCamera().getName())
-		// 				.getEntry("rawBytes"),
-		// 		EnumSet.of(NetworkTableEvent.Kind.kValueAll),
-		// 		event -> shooterCamera.update(m_swerveDrive));
+        networkTables.addListener(
+				networkTables
+						.getTable("photonvision")
+						.getSubTable(shooterCamera.getCamera().getName())
+						.getEntry("rawBytes"),
+				EnumSet.of(NetworkTableEvent.Kind.kValueAll),
+				event -> shooterCamera.update(m_swerveDrive));
     }
 
     public Pose2d getRobotPose()

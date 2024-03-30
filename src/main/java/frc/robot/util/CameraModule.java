@@ -37,7 +37,7 @@ public class CameraModule
 
     // Standard Deviations for Camera Measurements (Larger values means less trusted)
     // TODO: Measure n1 and n2 standard devs.
-	private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(1, 1, Double.POSITIVE_INFINITY);
+	private static final Vector<N3> STANDARD_DEVS = VecBuilder.fill(0.2, 0.2, Double.POSITIVE_INFINITY);
 
     private Optional<EstimatedRobotPose> latestPose = Optional.empty();
     private PhotonPipelineResult latestResult = null;
@@ -46,14 +46,15 @@ public class CameraModule
 	private Pose2d lastFieldPose = new Pose2d(-1, -1, new Rotation2d());
 
 
-    public CameraModule(PhotonCamera camera, Transform3d robotToCameraTransformation)
+    public CameraModule(PhotonCamera camera, Transform3d robotToCameraTransformation, int startingPipeline)
     {
         this.camera = camera;
         this.robotRelativeMountingPosition = robotToCameraTransformation;
         this.photonPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotRelativeMountingPosition);
 
+        setPipelineIndex(startingPipeline);
         photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_LAST_POSE);
-        setPipelineIndex(0);
+        photonPoseEstimator.setLastPose(lastFieldPose);
     }
 
 
@@ -91,6 +92,7 @@ public class CameraModule
 
     public void update(SwerveDrivePoseEstimator swerveDrive)
     {
+        System.out.println("Updating april tags. . ." + System.currentTimeMillis());
         latestResult = camera.getLatestResult();
 		latestResultIsValid = isCameraResultValid(latestResult);
 		lastValidTimestampSeconds = latestResult.getTimestampSeconds();
@@ -100,6 +102,7 @@ public class CameraModule
 		}
 		latestPose = photonPoseEstimator.update(latestResult);
 		if (latestPose.isPresent()) {
+            System.out.println("Updating Pose. . .");
 			lastValidTimestampSeconds = latestPose.get().timestampSeconds;
 			lastFieldPose = latestPose.get().estimatedPose.toPose2d();
 			swerveDrive.addVisionMeasurement(lastFieldPose, lastValidTimestampSeconds, STANDARD_DEVS);

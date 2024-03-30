@@ -2,10 +2,34 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/cameraFieldPoseEstimate": "Field2d",
+      "/SmartDashboard/fusedFieldPoseEstimate": "Field2d",
+      "/SmartDashboard/swerveFieldPoseEstimate": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/cameraFieldPoseEstimate": {
+        "Robot": {
+          "arrowSize": 48
+        },
+        "bottom": 1476,
+        "height": 8.210550308227539,
+        "left": 150,
+        "right": 2961,
+        "top": 79,
+        "width": 16.541748046875
+      }
     }
   },
   "NetworkTables Info": {
-    "visible": true
+    "Server": {
+      "Publishers": {
+        "open": true
+      },
+      "Subscribers": {
+        "open": true
+      },
+      "open": true
+    }
   }
 }

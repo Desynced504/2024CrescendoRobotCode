@@ -45,7 +45,7 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
     private Field2d cameraFieldPoseEstimate = new Field2d(); // SmartDashboard Representation of Robot Position
     private Field2d swerveFieldPoseEstimate = new Field2d(); // SmartDashboard Representation of Robot Position
-    private Field2d fusedFieldPoseEstimate = new Field2d(); // SmartDashboard Representation of Robot Position
+    public Field2d fusedFieldPoseEstimate = new Field2d(); // SmartDashboard Representation of Robot Position
     private double timer;
 
     /** Swerve Controller From Chassis Speeds */
@@ -164,8 +164,12 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     @Override
     public void periodic()
     {
-        // TODO: Check this functionaltiy, also add a delay
-        swerveFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
+        if (System.currentTimeMillis() - timer > 100)
+        {
+            timer = System.currentTimeMillis();
+            fusedFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
+
+        }  
     }
 
 

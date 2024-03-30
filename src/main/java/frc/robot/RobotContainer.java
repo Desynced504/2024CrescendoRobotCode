@@ -25,6 +25,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -93,16 +95,18 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-
+    // XboxController x = new XboxController(0);
+    // x.setOutputs(4);
+    // x.setRumble(RumbleType.kLeftRumble, 0);
     // // Default Commands
-    // m_SwerveSubsystem.setDefaultCommand
-    // (
-    //   m_SwerveSubsystem.drive(
-    //       () -> -m_controller.getLeftY()
-    //       , () -> -m_controller.getLeftX()
-    //       , () -> -m_controller.getRightX()
-    //       )
-    // );
+    m_SwerveSubsystem.setDefaultCommand
+    (
+      m_SwerveSubsystem.drive(
+          () -> -m_controller.getLeftY()
+          , () -> -m_controller.getLeftX()
+          , () -> -m_controller.getRightX()
+          )
+    );
     // m_ClimberSubsystem.setDefaultCommand(m_ClimberSubsystem.stopClimber());
 
     // // Event Trigger Commands
