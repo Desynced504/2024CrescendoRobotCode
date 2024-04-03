@@ -4,9 +4,19 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.pathfinding.LocalADStar;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.PhotonVisionSwerveUtil;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,6 +38,7 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+    Pathfinding.setPathfinder(new LocalADStar());
   }
 
   /**
@@ -44,6 +55,19 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    // System.out.println("Alliance: " + DriverStation.getAlliance().get());
+
+    // Pose2d robotPose = new Pose2d(1, 6.96, new Rotation2d());
+    // Pose3d targetPose = FieldElements.SPEAKER.getPose();
+
+    // Rotation2d yaw = PhotonVisionSwerveUtil.getRotationToTarget(robotPose, targetPose);
+    // double pitch = PhotonVisionSwerveUtil.getActuatorPitchDegreesToTarget(robotPose, targetPose);
+    // System.out.println("Robot Pose: " + robotPose);
+    // System.out.println("Target Yaw" + targetPose.getRotation().toRotation2d());
+    // System.out.println("Target Pose: " + targetPose);
+
+    // System.out.println("Calculated Pitch: " + pitch);
+    // System.out.println("Calculated Yaw: " + yaw);
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

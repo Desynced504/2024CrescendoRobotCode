@@ -78,6 +78,9 @@ public final class Constants {
     // Min and Max Angles on Actuator for scoring
     public static final double minAngle = 30;
     public static final double maxAngle = 60;
+    // Pre-Determined Shot Angles
+    public static final double automTapeShotAngle = 35;
+    public static final double defaultBellyUpAngle = 53;
   }
 
   public static class ShooterConstants {

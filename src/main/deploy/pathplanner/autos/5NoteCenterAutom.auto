@@ -1,0 +1,73 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2684960126741138,
+      "y": 5.68710451774403
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MiddleAmpCornerTopNote"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HarvestMiddleFromTop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HarvestBottomFromMiddle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MoveToCenterShotFromBottom"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Aim"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "HarvestCenter3"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "ReturnFromCenter3"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "LehighAutoms",
+  "choreoAuto": false
+}

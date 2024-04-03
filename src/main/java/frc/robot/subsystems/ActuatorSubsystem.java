@@ -14,18 +14,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.PIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.commands.ActuatorCommands.ActuatorAngleTargetting;
+import frc.robot.util.PhotonVisionSwerveUtil;
 
 public class ActuatorSubsystem extends SubsystemBase {
   // Motor Directions, Positive is extend, Negative is retract
   private final TalonFX actuator = new TalonFX(Constants.ActuatorConstants.Actuator_ID);
   private final Pigeon2 gyro = new Pigeon2(Constants.ActuatorConstants.ActuatorGyro_Pigeon_ID);
+  private PIDController m_actuatorPIDController = new PIDController(2, 0.5, 0);
   // private final LinearFilter gyroRollFilter;
 
   // TODO: Add Actuator to Interrupt All
 
   /** Creates a new ActuatorSubsystem. */
   public ActuatorSubsystem() {
-
+    m_actuatorPIDController.setTolerance(1);
     // gyroRollFilter = LinearFilter.movingAverage(10);
   }
 
@@ -72,7 +75,7 @@ public class ActuatorSubsystem extends SubsystemBase {
   public void setActuatorSpeed(double percentSpeed)
   {
     double restrictedSpeed = restrictSpeeds(percentSpeed, 0.5, 0.02);
-    System.out.println("Restricted Speed = " + restrictedSpeed);
+    // System.out.println("Restricted Speed = " + restrictedSpeed);
     actuator.set(restrictedSpeed);
   }
 
@@ -105,34 +108,59 @@ public class ActuatorSubsystem extends SubsystemBase {
     return runOnce(() -> actuator.setControl(new PositionDutyCycle(target, 0, false, 0, 0, true, false, false)));
   }
 
-  // public Command ActuateToTargetAngle(DoubleSupplier targetAngle)
-  // {
-  //   return new PIDCommand(
-  //       // The controller that the command will use
-  //       new PIDController(1, 0.1, 0),
-  //       // This should return the measurement
-  //       filteredGyroRollSupplier(),
-  //       // This should return the setpoint (can also be a constant)
-  //       targetAngle,
-  //       // This uses the output
-  //       output -> {
-  //           System.out.println("CurrentAngle: " + filteredGyroRollSupplier().getAsDouble());
-  //           // Process Raw Output
-  //           output = Math.min(output, 20);
-  //           output = Math.max(output, -20);
-  //           System.out.println("Output: " + output);
-  //           double targetMotorSpeed = (output / 80);
+  public void ActuateToTargetAngle(DoubleSupplier targetAngleSupplier)
+  {
+    double targetAngle, actuatorAngle, output, targetMotorSpeed;
+    targetAngle = targetAngleSupplier.getAsDouble();
+    // Restrict Target Angle from 30 to 70
+    targetAngle = targetAngle < 30 ? 30:targetAngle;
+    targetAngle = targetAngle > 70 ? 70:targetAngle;
 
-  //           targetMotorSpeed = Math.min(targetMotorSpeed, 0.5);
-  //           targetMotorSpeed = Math.max(targetMotorSpeed, -0.5);
+    actuatorAngle = gyroRollSupplier();
+    System.out.println("Raw Gyro Data: " + actuatorAngle);
 
-  //           if (Math.abs(targetMotorSpeed) < 0.05)
-  //               targetMotorSpeed = 0;
+    output = m_actuatorPIDController.calculate(actuatorAngle, targetAngle);
 
-  //           System.out.println("Calculated Output: " + targetMotorSpeed);
-  //           // actuator.set(targetMotorSpeed);
-  //       },
-  //       this);
-  // }
+    output = Math.min(output, 20);
+    output = Math.max(output, -20);
+    System.out.println("Output: " + output);
+    targetMotorSpeed = (output / 20);
+
+    setActuatorSpeed(targetMotorSpeed);
+
+
+    // return new ActuatorAngleTargetting
+    // return new PIDCommand(
+    //     // The controller that the command will use
+    //     new PIDController(1, 0.1, 0),
+    //     // This should return the measurement
+    //     gyroRollSupplier(),
+    //     // This should return the setpoint (can also be a constant)
+    //     targetAngle,
+    //     // This uses the output
+    //     output -> {
+    //         System.out.println("CurrentAngle: " + filteredGyroRollSupplier().getAsDouble());
+    //         // Process Raw Output
+    //         output = Math.min(output, 20);
+    //         output = Math.max(output, -20);
+    //         System.out.println("Output: " + output);
+    //         double targetMotorSpeed = (output / 80);
+
+    //         targetMotorSpeed = Math.min(targetMotorSpeed, 0.5);
+    //         targetMotorSpeed = Math.max(targetMotorSpeed, -0.5);
+
+    //         if (Math.abs(targetMotorSpeed) < 0.05)
+    //             targetMotorSpeed = 0;
+
+    //         System.out.println("Calculated Output: " + targetMotorSpeed);
+    //         // actuator.set(targetMotorSpeed);
+    //     },
+    //     this);
+  }
+
+  public Command CMD_ActuateToTargetAngle(DoubleSupplier targetAngle)
+  {
+    return runOnce(() -> ActuateToTargetAngle(targetAngle));
+  }
 
 }

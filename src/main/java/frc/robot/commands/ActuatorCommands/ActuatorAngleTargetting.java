@@ -47,18 +47,24 @@ public class ActuatorAngleTargetting extends Command {
   @Override
   public void execute()
   {
+    // System.out.println("TargetAngle" + m_targetAngle);
     m_actuatorAngle = m_ActuatorSubsystem.gyroRollSupplier();
-    System.out.println("Raw Gyro Data: " + m_actuatorAngle);
+    // System.out.println("Raw Gyro Data: " + m_actuatorAngle);
 
     double output = m_actuatorPIDController.calculate(m_actuatorAngle, m_targetAngle);
 
     output = Math.min(output, 20);
     output = Math.max(output, -20);
-    System.out.println("Output: " + output);
+    // System.out.println("Output: " + output);
     m_targetMotorSpeed = (output / 20);
 
     m_ActuatorSubsystem.setActuatorSpeed(m_targetMotorSpeed);
 
+  }
+
+  public void updateTargetAngle(double targetAngle)
+  {
+    m_targetAngle = targetAngle;
   }
 
   // Called once the command ends or is interrupted.

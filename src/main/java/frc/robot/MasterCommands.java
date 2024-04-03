@@ -1,15 +1,21 @@
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.commands.AutomaticTargetAligner;
+import frc.robot.subsystems.ActuatorSubsystem;
 import frc.robot.subsystems.ClimberSubsystem;
 import frc.robot.subsystems.HarvesterSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.util.PhotonVisionSwerveUtil;
 
 /**
  * Class Containing lists of pre-determined command groups. (Same as Constants class just cleaner in separate file)
@@ -20,7 +26,9 @@ public final class MasterCommands
     private final HarvesterSubsystem m_HarvesterSubsystem;
     private final IndexerSubsystem m_IndexerSubsystem;
     private final ShooterSubsystem m_ShooterSubsystem;
+    private final ActuatorSubsystem m_ActuatorSubsystem;
     private final ClimberSubsystem m_ClimberSubsystem;
+    private final PhotonVisionSwerveUtil m_PhotonVisionSwerveUtil;
 
     private enum CommandSelector {
         ONE,
@@ -36,12 +44,14 @@ public final class MasterCommands
      * @param shooterSubsystem - Requires shooterSubsystem
      * @param climberSubsystem - Requires climberSubsystem
      */
-    public MasterCommands(SwerveSubsystem swerveSubsystem, HarvesterSubsystem harvesterSubsystem, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem, ClimberSubsystem climberSubsystem) {
+    public MasterCommands(SwerveSubsystem swerveSubsystem, HarvesterSubsystem harvesterSubsystem, IndexerSubsystem indexerSubsystem, ShooterSubsystem shooterSubsystem, ActuatorSubsystem actuatorSubsystem, ClimberSubsystem climberSubsystem, PhotonVisionSwerveUtil photonVisionSwerveUtil) {
         m_SwerveSubsystem = swerveSubsystem;
         m_HarvesterSubsystem = harvesterSubsystem;
         m_IndexerSubsystem = indexerSubsystem;
         m_ShooterSubsystem = shooterSubsystem;
+        m_ActuatorSubsystem = actuatorSubsystem;
         m_ClimberSubsystem = climberSubsystem;
+        m_PhotonVisionSwerveUtil = photonVisionSwerveUtil;
     }
 
     /**
@@ -112,10 +122,23 @@ public final class MasterCommands
         (
             m_ShooterSubsystem.CMD_shootNoteAtTargetVelocity()
             , m_IndexerSubsystem.CMD_indexFeed()
-            , new WaitCommand(0.25)
+            , new WaitCommand(0.5)
         )
             .andThen(m_IndexerSubsystem.CMD_stopIndexer())
             .andThen(m_ShooterSubsystem.CMD_stopShooting());
+    }
+
+    public Command aimToSpeaker(Supplier<Double> leftX, Supplier<Double> leftY)
+    {
+        return new AutomaticTargetAligner(m_SwerveSubsystem, m_ActuatorSubsystem, m_PhotonVisionSwerveUtil, FieldElements.SPEAKER, true, true, leftX, leftY);
+    }
+
+    public Command aimWhileShoot(Supplier<Double> leftX, Supplier<Double> leftY)
+    {
+        return Commands.parallel(
+            aimWhileShoot(leftX, leftY)
+            , Shoot()
+            );
     }
 
     public Command isShotReady()

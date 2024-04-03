@@ -5,7 +5,9 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.commands.AutomaticTargetAligner;
 import frc.robot.commands.ActuatorCommands.ActuatorAngleTargetting;
+import frc.robot.commands.ActuatorCommands.AutoSpeakerActuating;
 // import frc.robot.commands.ActuatorCommands.AutoSpeakerActuating;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ActuatorSubsystem;
@@ -17,7 +19,7 @@ import frc.robot.subsystems.HarvesterSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveSubsystem;
-import frc.robot.util.PhotonVisionWrapper;
+import frc.robot.util.PhotonVisionSwerveUtil;
 
 import java.util.function.DoubleSupplier;
 
@@ -44,26 +46,15 @@ public class RobotContainer {
   // private final PhotonVisionSubsystem m_PhotonVisionSubsystem = new PhotonVisionSubsystem();
   // private final CameraSubsystem m_CameraSubsystem = new CameraSubsystem();
   private final SwerveSubsystem m_SwerveSubsystem = TunerConstants.SwerveDriveTrain;
-  private final PhotonVisionWrapper m_PhotonVisionWrapper = new PhotonVisionWrapper(m_SwerveSubsystem.getSwerveDriveOdometry()); //TODO: Test Requirements on Swerve Drive
+  private final PhotonVisionSwerveUtil m_PhotonVisionSwerveUpdater = new PhotonVisionSwerveUtil(m_SwerveSubsystem); //TODO: Test Requirements on Swerve Drive
   private final HarvesterSubsystem m_HarvesterSubsystem = new HarvesterSubsystem();
   private final IndexerSubsystem m_IndexerSubsystem = new IndexerSubsystem();
   private final ShooterSubsystem m_ShooterSubsystem = new ShooterSubsystem();
   private final ActuatorSubsystem m_ActuatorSubsystem = new ActuatorSubsystem();
   private final ClimberSubsystem m_ClimberSubsystem = new ClimberSubsystem();
 
-  private final MasterCommands MasterCommands = new MasterCommands(m_SwerveSubsystem, m_HarvesterSubsystem, m_IndexerSubsystem, m_ShooterSubsystem, m_ClimberSubsystem);
-  // Command Groups
-  //   public final ParallelDeadlineGroup harvestSequence = new ParallelDeadlineGroup
-  //       (
-  //         m_IndexerSubsystem.CMDisNotePresent()
-  //         , new ParallelCommandGroup
-  //         (
-  //           m_HarvesterSubsystem.CMDharvest()
-  //           , m_IndexerSubsystem.CMDindexFeed()
-  //         )
-  //       ).cf9gv  
-  //       finallyDo(m_IndexerSubsystem.CMDstopIndexer());
-  //       .andThen(m_IndexerSubsystem.CMDstopIndexer()).andThen(m_HarvesterSubsystem.CMDstopHarvester());
+  private final MasterCommands MasterCommands = new MasterCommands(m_SwerveSubsystem, m_HarvesterSubsystem, m_IndexerSubsystem, m_ShooterSubsystem, m_ActuatorSubsystem, m_ClimberSubsystem, m_PhotonVisionSwerveUpdater);
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_controller =
@@ -80,6 +71,7 @@ public class RobotContainer {
     // TODO: Register named Commands for Automs in PathPlanner
     NamedCommands.registerCommand("Shoot", MasterCommands.Shoot());
     NamedCommands.registerCommand("Harvest", MasterCommands.Harvest());
+    NamedCommands.registerCommand("Aim", MasterCommands.aimToSpeaker(() -> 0.0, () -> 0.0));
 
     // Configure the trigger bindings
     configureBindings();
@@ -107,23 +99,31 @@ public class RobotContainer {
           , () -> -m_controller.getRightX()
           )
     );
-    // m_ClimberSubsystem.setDefaultCommand(m_ClimberSubsystem.stopClimber());
+    m_ClimberSubsystem.setDefaultCommand(m_ClimberSubsystem.stopClimber());
 
-    // // Event Trigger Commands
-    // m_controller.x().onTrue(MasterCommands.Harvest());
-    // m_controller.b().onTrue(MasterCommands.Shoot());
+    // Event Trigger Commands
+    m_controller.x().onTrue(MasterCommands.Harvest());
+    m_controller.b().onTrue(MasterCommands.Shoot());
     
-    // m_controller.a().whileTrue(MasterCommands.interruptAll());
-    // m_controller.y().whileTrue(MasterCommands.ReverseHarvest());
+    m_controller.a().whileTrue(MasterCommands.interruptAll());
+    m_controller.y().whileTrue(MasterCommands.ReverseHarvest());
 
-    // // TODO: Camera is 13 inches from center of robot
-    // m_controller.button(7).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 35));
-    // m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> 53));
-    // // m_controller.button(8).whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, 00));
-    // m_controller.rightBumper().onTrue(m_SwerveSubsystem.CMDzeroGyro());
+    // TODO: Camera is 13 inches from center of robot
+    m_controller.button(7).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> Constants.ActuatorConstants.automTapeShotAngle));
+    m_controller.button(8).onTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> Constants.ActuatorConstants.defaultBellyUpAngle));
+    // m_controller.button(8).whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, 00));
+
+    // m_controller.leftBumper().whileTrue(new AutoSpeakerActuating(m_ActuatorSubsystem, m_PhotonVisionSwerveUpdater, FieldElements.SPEAKER.getPose()));
+    // Uncomment this for testing . . . 
+
+    m_controller.leftBumper().whileTrue(new AutomaticTargetAligner(m_SwerveSubsystem, m_ActuatorSubsystem, m_PhotonVisionSwerveUpdater, FieldElements.SPEAKER, true, true, () -> -m_controller.getLeftY(), () -> -m_controller.getLeftX()));
+    // Also test Pathfinding
+
+    m_controller.rightBumper().onTrue(m_SwerveSubsystem.CMDzeroGyro());
  
-    // // new JoystickButton(m_crescendoController, 7).whileTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> (((joystickSlider.getAsDouble()+1)*20) + 30)));
-    // new JoystickButton(m_crescendoController, 1).onTrue(MasterCommands.trapShot());
+    // new JoystickButton(m_crescendoController, 7).whileTrue(new ActuatorAngleTargetting(m_ActuatorSubsystem, () -> (((joystickSlider.getAsDouble()+1)*20) + 30)));
+    new JoystickButton(m_crescendoController, 1).onTrue(MasterCommands.trapShot());
+
 
     // new JoystickButton(m_crescendoController, 2).whileTrue(m_ClimberSubsystem.extend());
     // new JoystickButton(m_crescendoController, 3).whileTrue(m_ClimberSubsystem.retract());
@@ -145,8 +145,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return new SequentialCommandGroup(
+      // MasterCommands.aimWhileShoot(() -> 0.0, () -> 0.0)
       MasterCommands.Shoot()
-      // , new PathPlannerAuto("4NoteGrab5")
+      , new PathPlannerAuto("Lehigh5NoteCenterAutom")
       // , new PathPlannerAuto("4 Note From Middle")
       // , MasterCommands.Shoot()
       );

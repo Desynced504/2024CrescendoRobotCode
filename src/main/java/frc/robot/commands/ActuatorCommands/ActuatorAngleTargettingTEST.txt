@@ -4,33 +4,32 @@
 
 package frc.robot.commands.ActuatorCommands;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ActuatorSubsystem;
-import frc.robot.util.PhotonVisionSwerveUtil;
 
-public class AutoSpeakerActuating extends Command {
+public class ActuatorAngleTargetting extends Command {
 
   private final ActuatorSubsystem m_ActuatorSubsystem;
-  private final PhotonVisionSwerveUtil m_PhotonVisionSwerveUtil;
   private PIDController m_actuatorPIDController = new PIDController(2, 0.5, 0);
   private double m_actuatorAngle;
+  private DoubleSupplier m_targetAngleSupplier;
   private double m_targetAngle;
   private double m_targetMotorSpeed;
 
   /** Creates a new ActuatorAngleTargetting. */
-  public AutoSpeakerActuating(ActuatorSubsystem actuatorSubsystem, PhotonVisionSwerveUtil photonVisionSwerveUtil, Pose3d targetPose3d) {
+  public ActuatorAngleTargetting(ActuatorSubsystem actuatorSubsystem, DoubleSupplier targetAngleSupplier) {
+
+    m_targetAngleSupplier = targetAngleSupplier;
+
+    // double targetAngle = targetAngleSupplier.getAsDouble();
+    // // Restrict Target Angle from 30 to 70
+    // targetAngle = targetAngle < 30 ? 30:targetAngle;
+    // targetAngle = targetAngle > 70 ? 70:targetAngle;
+
     m_ActuatorSubsystem = actuatorSubsystem;
-    m_PhotonVisionSwerveUtil = photonVisionSwerveUtil;
-
-    double targetAngle = PhotonVisionSwerveUtil.getActuatorPitchDegreesToTarget(m_PhotonVisionSwerveUtil.getRobotPose(), targetPose3d);
-    // Restrict Target Angle from 30 to 70
-    targetAngle = targetAngle < 30 ? 30:targetAngle;
-    targetAngle = targetAngle > 70 ? 70:targetAngle;
-
-    m_targetAngle = targetAngle;
-
     addRequirements(m_ActuatorSubsystem);
   }
 
@@ -50,18 +49,32 @@ public class AutoSpeakerActuating extends Command {
   @Override
   public void execute()
   {
+    m_targetAngle = m_targetAngleSupplier.getAsDouble();
+    // Restrict Target Angle from 30 to 70
+    m_targetAngle = m_targetAngle < 30 ? 30:m_targetAngle;
+    m_targetAngle = m_targetAngle > 70 ? 70:m_targetAngle;
+
+    System.out.println("TargetAngle: " + m_targetAngle);
+    System.out.println("TargetAngleSupplier: " + m_targetAngleSupplier);
+
+    // System.out.println("TargetAngle" + m_targetAngle);
     m_actuatorAngle = m_ActuatorSubsystem.gyroRollSupplier();
-    System.out.println("Raw Gyro Data: " + m_actuatorAngle);
+    // System.out.println("Raw Gyro Data: " + m_actuatorAngle);
 
     double output = m_actuatorPIDController.calculate(m_actuatorAngle, m_targetAngle);
 
     output = Math.min(output, 20);
     output = Math.max(output, -20);
-    System.out.println("Output: " + output);
+    // System.out.println("Output: " + output);
     m_targetMotorSpeed = (output / 20);
 
     m_ActuatorSubsystem.setActuatorSpeed(m_targetMotorSpeed);
 
+  }
+
+  public void updateTargetAngle(double targetAngle)
+  {
+    m_targetAngle = targetAngle;
   }
 
   // Called once the command ends or is interrupted.

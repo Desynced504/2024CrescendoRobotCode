@@ -1,0 +1,70 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.27,
+        "y": 4.12
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 5.719682530142597,
+        "y": 3.3295692295082753
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.01,
+        "y": 5.25
+      },
+      "prevControl": {
+        "x": 5.648498446430002,
+        "y": 4.841067306043566
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [
+    {
+      "name": "Harvest",
+      "waypointRelativePos": 1.0,
+      "command": {
+        "type": "parallel",
+        "data": {
+          "commands": [
+            {
+              "type": "named",
+              "data": {
+                "name": "Harvest"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 4.5,
+    "maxAcceleration": 4.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": -4.480000000000018,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": "LehighPaths",
+  "previewStartingState": {
+    "rotation": 16.84,
+    "velocity": 0
+  },
+  "useDefaultConstraints": false
+}

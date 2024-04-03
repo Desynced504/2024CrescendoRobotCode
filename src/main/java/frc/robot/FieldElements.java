@@ -12,24 +12,30 @@ import edu.wpi.first.wpilibj.DriverStation;
 public enum FieldElements
 {
     // Field Elements Defined on Blue Side Origin, Mirrored in getPose() method based on DriverStation info.
-    SPEAKER(new Pose3d(0, 5.55, 2.045, new Rotation3d()))
-    , AMP(new Pose3d(4.85, 4.1, 0, new Rotation3d())) // TODO: Find Target Height
+    SPEAKER(new Pose3d(0.2, 5.55, 2.045, new Rotation3d()), 7)
+    , AMP(new Pose3d(1.84, 8.14, 0, new Rotation3d())) // TODO: Find Target Height
     , CLOSE_NOTE(new Pose3d(15, 0.5, 0, new Rotation3d()))
     , MIDDLE_NOTE(new Pose3d(15.5, 0.8, 0, new Rotation3d()))
     , FAR_NOTE(new Pose3d(16.1, 1.15, 0, new Rotation3d()));
 
     // TODO: Find Measurements for Stage Targetting
-    // STAGE1(new Pose3d(0, 0, 0, new Rotation3d()));
+    // STAGE1(new Pose3d(4.85, 4.1, 0, new Rotation3d()));
     // STAGE2(new Pose3d(0, 0, 0, new Rotation3d()));
     // STAGE3(new Pose3d(0, 0, 0, new Rotation3d()));
 
     
-    private Pose3d fieldElementPosition;
-
+    private Pose3d fieldElementPosition = null;
+    private int aprilTagTargetID = 0;
 
     FieldElements(Pose3d fieldElementPosition)
     {
         this.fieldElementPosition = fieldElementPosition;
+    }
+
+    FieldElements(Pose3d fieldElementPosition, int aprilTagTargetID)
+    {
+        this.fieldElementPosition = fieldElementPosition;
+        this.aprilTagTargetID = aprilTagTargetID;
     }
 
 
@@ -52,8 +58,23 @@ public enum FieldElements
      */
     public Pose3d getPose() {
         if (shouldMirrorFieldElement())
-            return fieldElementPosition.transformBy(new Transform3d(16.54 - fieldElementPosition.getX(), 0, 0, new Rotation3d()));
+            // return fieldElementPosition.getTranslation().
+            return fieldElementPosition.transformBy(new Transform3d((16.54 - (fieldElementPosition.getX()*2)), 0, 0, new Rotation3d()));
         else
             return fieldElementPosition;
+    }
+
+    public int getAprilTagTarget()
+    {
+        switch (aprilTagTargetID) {
+            case 7:
+                if (shouldMirrorFieldElement())
+                {
+                    return 4;
+                }
+                return 7;
+            default:
+                return aprilTagTargetID;
+        }
     }
 }

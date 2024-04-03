@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.photonvision.EstimatedRobotPose;
 
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrain;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveDrivetrainConstants;
@@ -30,12 +31,14 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants;
+import frc.robot.generated.TunerConstants;
 
 /**
  * Class that extends the Phoenix SwerveDrivetrain class and implements subsystem
@@ -79,7 +82,11 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     }
     
     public SwerveSubsystem(SwerveDrivetrainConstants driveTrainConstants, double OdometryUpdateFrequency, SwerveModuleConstants... modules) {
-        super(driveTrainConstants, OdometryUpdateFrequency, modules);
+        super(driveTrainConstants, OdometryUpdateFrequency
+            ,VecBuilder.fill(0.1, 0.1, 0.1)
+            ,VecBuilder.fill(0.9, 0.9, 0.9)
+            ,modules
+        );
 
         for (SwerveModule module : this.Modules) {
             module.getDriveMotor().getConfigurator().apply(driveMotorSettings);
@@ -149,6 +156,25 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         this.seedFieldRelative();
     }
 
+    public void setGyroOffset(Rotation2d gyroOffset)
+    {
+        this.m_fieldRelativeOffset = gyroOffset;
+    }
+
+    public void updateState()
+    {
+        /* Update Odometry */
+        for (int i = 0; i < ModuleCount; ++i) {
+            m_modulePositions[i] = Modules[i].getPosition(false);
+            m_moduleStates[i] = Modules[i].getCurrentState();
+        }
+        double yawDegrees = BaseStatusSignal.getLatencyCompensatedValue(
+                m_yawGetter, m_angularVelocity);
+
+        /* Keep track of previous and current pose to account for the carpet vector */
+        m_odometry.updateWithTime(System.currentTimeMillis()/1000, Rotation2d.fromDegrees(yawDegrees), m_modulePositions);
+    }
+
     public void updatePose(Pose2d visionPose2dEstimate, double timestampSeconds)
     {
         this.m_odometry.addVisionMeasurement(visionPose2dEstimate, timestampSeconds);;
@@ -168,7 +194,6 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
         {
             timer = System.currentTimeMillis();
             fusedFieldPoseEstimate.setRobotPose(this.m_odometry.getEstimatedPosition());
-
         }  
     }
 
@@ -264,21 +289,25 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
     /**
      * xVelocity = -joystick.getLeftY()
      * yVelocity = -joystick.getLeftX()
-     * rotationalRate = -joystick.getRightX()
      * 
      * @param xVelocity - The percentage of maximum speed in the x-direction such as controller (-1, 1) joystick values.
      * @param yVelocity - The percentage of maximum speed in the y-direction such as controller (-1, 1) joystick values.
      * @param targetDirection - The yaw target in degrees to face while driving (no strafe)
      * @return Drive Facing Angle Command for SwerveSubsystem
      */
-    public Command driveFacingAngle(Supplier<Double> leftY, Supplier<Double> leftX, Rotation2d targetDirection)
+    public void driveFacingAngle(Supplier<Double> leftY, Supplier<Double> leftX, Rotation2d targetDirection)
     {
+        // this.FieldCentricFacingAngleSwerveRequest.HeadingController.setPID(2, 0.3, 0.5);
+        // TODO: Tune this Rotational PID, Most likely needs to be PID(5, 0, 0)
+        this.FieldCentricFacingAngleSwerveRequest.HeadingController.setPID(5, 0, 0);
+        this.FieldCentricFacingAngleSwerveRequest.HeadingController.enableContinuousInput(-Math.PI, Math.PI);
+
         Supplier<SwerveRequest> requestSupplier = () -> FieldCentricFacingAngleSwerveRequest
             .withVelocityX(leftY.get() * Constants.SwerveDriveConstants.MAX_TELE_DRIVE_SPEED) // Drive forward with negative Y (forward)
             .withVelocityY(leftX.get() * Constants.SwerveDriveConstants.MAX_TELE_DRIVE_SPEED) // Drive left with negative X (left)
             .withTargetDirection(targetDirection);
-
-            return this.applyRequest(requestSupplier);
+            this.setControl(requestSupplier.get());
+            // return this.applyRequest(requestSupplier);
     }
 
 
@@ -363,11 +392,10 @@ public class SwerveSubsystem extends SwerveDrivetrain implements Subsystem {
 
         // Create the constraints to use while pathfinding
         
-        /*
-        PathConstraints constraints = new PathConstraints(
-                3.0, 4.0,
-                Units.degreesToRadians(540), Units.degreesToRadians(720));
-        */
+        
+        // PathConstraints constraints = new PathConstraints(
+        //         3.0, 4.0,
+        //         Units.degreesToRadians(540), Units.degreesToRadians(720));
 
         // Since AutoBuilder is configured, we can use it to build pathfinding commands
         Command pathfindingCommand = AutoBuilder.pathfindToPose(
